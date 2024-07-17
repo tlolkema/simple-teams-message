@@ -1,0 +1,64 @@
+name: 'Simple Teams Webhook Message'
+description: 'Post a simple message into a Teams channel using workflows'
+
+inputs:
+  message_title:
+    description: 'Title of the message'
+    required: true
+  message_description:
+    description: 'Description of the message'
+    required: true
+  webhook:
+    description: 'Webhook URL for the Teams channel'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: teams-message
+      shell: bash
+      env:
+        TEAMS_WEBHOOK: ${{ inputs.webhook }}
+      run: |
+
+        CARD_JSON=$(cat << EOF
+        {
+          "type": "message",
+          "attachments": [
+            {
+              "contentType": "application/vnd.microsoft.card.adaptive",
+              "contentUrl": null,
+              "content": {
+                "type": "AdaptiveCard",
+                "body": [
+                  {
+                    "type": "TextBlock",
+                    "size": "Large",
+                    "weight": "Bolder",
+                    "text": "${{ inputs.message_title }}",
+                    "wrap": true
+                  },
+                  {
+                    "type": "TextBlock",
+                    "text": "${{ inputs.message_description }}",
+                    "wrap": true
+                  }
+                ],
+                "actions": [
+                  {
+                    "type": "Action.OpenUrl",
+                    "title": "CI-run",
+                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                ],
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                "version": "1.2"
+              }
+            }
+          ]
+        }
+        EOF
+        )
+
+        # Send the Adaptive Card to Teams
+        curl -H "Content-Type: application/json" -d "$CARD_JSON" $TEAMS_WEBHOOK
