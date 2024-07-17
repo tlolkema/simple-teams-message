@@ -1,5 +1,9 @@
 name: 'Simple Teams Webhook Message'
 description: 'Post a simple message into a Teams channel using workflows'
+author: 'Tim Lolkema'
+branding:
+  icon: 'message-square'
+  color: 'blue'
 
 inputs:
   message_title:
