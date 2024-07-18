@@ -1,5 +1,5 @@
 name: 'Simple Teams Webhook Message'
-description: 'Post a simple message into a Teams channel using workflows'
+description: 'Post a message with optional image and extra text blocks into a Teams channel using workflows'
 author: 'Tim Lolkema'
 branding:
   icon: 'message-square'
@@ -15,6 +15,12 @@ inputs:
   webhook:
     description: 'Webhook URL for the Teams channel'
     required: true
+  image_url:
+    description: 'URL of the image to include in the message (optional)'
+    required: false
+  extra_text_blocks:
+    description: 'Additional text blocks to include in the message, separated by ||| (optional)'
+    required: false
 
 runs:
   using: "composite"
@@ -25,16 +31,28 @@ runs:
         TEAMS_WEBHOOK: ${{ inputs.webhook }}
       run: |
 
-        CARD_JSON=$(cat << EOF
-        {
-          "type": "message",
-          "attachments": [
-            {
-              "contentType": "application/vnd.microsoft.card.adaptive",
-              "contentUrl": null,
-              "content": {
-                "type": "AdaptiveCard",
-                "body": [
+        # Construct the content based on whether an image is provided
+        if [ ! -z "${{ inputs.image_url }}" ]; then
+          MAIN_CONTENT=$(cat << EOF
+          {
+            "type": "ColumnSet",
+            "columns": [
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "Image",
+                    "url": "${{ inputs.image_url }}",
+                    "size": "Medium",
+                    "style": "Person"
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "stretch",
+                "items": [
                   {
                     "type": "TextBlock",
                     "size": "Large",
@@ -47,6 +65,57 @@ runs:
                     "text": "${{ inputs.message_description }}",
                     "wrap": true
                   }
+                ]
+              }
+            ]
+          }
+        EOF
+        )
+        else
+          MAIN_CONTENT=$(cat << EOF
+          {
+            "type": "TextBlock",
+            "size": "Large",
+            "weight": "Bolder",
+            "text": "${{ inputs.message_title }}",
+            "wrap": true
+          },
+          {
+            "type": "TextBlock",
+            "text": "${{ inputs.message_description }}",
+            "wrap": true
+          }
+        EOF
+        )
+        fi
+
+        # Construct extra text blocks if provided
+        EXTRA_TEXT_BLOCKS=""
+        IFS='|||' read -ra BLOCKS <<< "${{ inputs.extra_text_blocks }}"
+        for BLOCK in "${BLOCKS[@]}"; do
+          EXTRA_TEXT_BLOCKS+=$(cat << EOF
+          ,
+          {
+            "type": "TextBlock",
+            "text": "${BLOCK}",
+            "wrap": true
+          }
+        EOF
+        )
+        done
+
+        CARD_JSON=$(cat << EOF
+        {
+          "type": "message",
+          "attachments": [
+            {
+              "contentType": "application/vnd.microsoft.card.adaptive",
+              "contentUrl": null,
+              "content": {
+                "type": "AdaptiveCard",
+                "body": [
+                  ${MAIN_CONTENT}
+                  ${EXTRA_TEXT_BLOCKS}
                 ],
                 "actions": [
                   {
