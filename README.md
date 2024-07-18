@@ -1,4 +1,4 @@
-# simple-teams-message
+# Simple Teams Message
 
 Microsoft Teams phased out the incoming Office365 webhook connector. This action allows you to send a message to a Teams channel using the new workflows process.
 
