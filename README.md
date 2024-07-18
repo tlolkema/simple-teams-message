@@ -6,11 +6,11 @@ Microsoft Teams phased out the incoming webhook connector. This action allows yo
 
 > Simple message
 
-![workflow](https://github.com/tlolkema/simple-teams-message/blob/main/assets/simple.png?raw=true)
+<img src="https://github.com/tlolkema/simple-teams-message/blob/main/assets/simple.png?raw=true" width="600"/>
 
 > With image and extra text blocks
 
-![workflow](https://github.com/tlolkema/simple-teams-message/blob/main/assets/complex.png?raw=true)
+<img src="https://github.com/tlolkema/simple-teams-message/blob/main/assets/complex.png?raw=true" width="600"/>
 
 ## How to use in your GitHub workflow
 
