@@ -22,13 +22,10 @@ Add the following to your workflow file:
     message_title: "Test Message"
     message_description: "Test"
     webhook: ${{ secrets.TEAMS_WEBHOOK }}
-```
 
-You can add the following optional parameters:
-
-```yaml
-image_url: "https://example.com/path/to/your/image.jpg"
-extra_text_blocks: "This is an extra block|||This is another extra block"
+    // Optional parameters
+    image_url: "https://example.com/path/to/your/image.jpg"
+    extra_text_blocks: "This is an extra block|||This is another extra block"
 ```
 
 ## How to configure the workflow in MS Teams
