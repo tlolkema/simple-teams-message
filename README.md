@@ -28,6 +28,15 @@ Add the following to your workflow file:
     extra_text_blocks: "This is an extra block|||This is another extra block"
 ```
 
+
+| Field | Description | Required |
+|-------|-------------|----------|
+| message_title | Title of the message | Yes |
+| message_description | Description of the message | Yes |
+| webhook | Webhook URL for the Teams channel | Yes |
+| image_url | URL of the image to include (optional) | No |
+| extra_text_blocks | Additional text blocks to include, separated by \|\|\| (optional) | No |
+
 ## How to configure the workflow in MS Teams
 
 1. Go to workflow menu
